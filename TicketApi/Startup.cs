@@ -10,6 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using TicketApi.Models;
+using TicketApi.Services;
 
 namespace TicketApi
 {
@@ -25,6 +28,15 @@ namespace TicketApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TicketDatabaseSettings>(
+                Configuration.GetSection(nameof(TicketDatabaseSettings))
+            );
+
+            services.AddSingleton<ITicketDatabaseSettings>(sp => 
+                sp.GetRequiredService<IOptions<TicketDatabaseSettings>>().Value);
+
+            services.AddSingleton<TicketService>();
+
             services.AddControllers();
         }
 
